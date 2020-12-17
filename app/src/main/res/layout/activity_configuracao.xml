@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    tools:context=".telas.ConfiguracaoActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:elevation="8dp"
+        app:title="Configurações"
+        android:theme="@style/Theme.OrcaGuincho"
+        app:titleTextColor="@android:color/white"
+        app:subtitleTextColor="@android:color/white"
+        style="@android:style/Holo.Light.ButtonBar"
+        android:outlineAmbientShadowColor="@android:color/white"
+        android:outlineSpotShadowColor="@android:color/white"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <ScrollView
+        android:layout_below="@+id/toolbar"
+        android:padding="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:textColor="@color/colorPrimary"
+                android:layout_marginTop="30dp"
+                android:textSize="22sp"
+                android:text="Horário"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TableRow
+                android:gravity="center"
+                android:layout_gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent">
+
+                <EditText
+                    android:id="@+id/idHoraInicial"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Hora Inicial"
+                    android:inputType="datetime"
+                    android:textColor="@color/colorText"
+                    android:textColorHint="@color/colorTextHint" />
+
+                <TextView
+                    android:padding="8dp"
+                    android:text="Até"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <EditText
+                    android:id="@+id/idHoraFinal"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:hint="Hora Final"
+                    android:inputType="datetime"
+                    android:textColor="@color/colorText"
+                    android:textColorHint="@color/colorTextHint" />
+            </TableRow>
+
+            <TextView
+                android:textColor="@color/colorPrimary"
+                android:layout_marginTop="30dp"
+                android:textSize="22sp"
+                android:text="Dias da Semana"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+                <TableRow
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent">
+
+                    <CheckBox
+                        android:id="@+id/idCBSegunda"
+                        android:text="Seg"
+                        android:textColor="@color/colorText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <CheckBox
+                        android:layout_marginLeft="@dimen/paddingLeft"
+                        android:id="@+id/idCBTerca"
+                        android:text="Ter"
+                        android:textColor="@color/colorText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <CheckBox
+                        android:layout_marginLeft="@dimen/paddingLeft"
+                        android:id="@+id/idCBQuarta"
+                        android:text="Qua"
+                        android:textColor="@color/colorText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <CheckBox
+                        android:layout_marginLeft="@dimen/paddingLeft"
+                        android:id="@+id/idCBQuinta"
+                        android:text="Qui"
+                        android:textColor="@color/colorText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <CheckBox
+                        android:layout_marginLeft="@dimen/paddingLeft"
+                        android:id="@+id/idCBSexta"
+                        android:text="Sex"
+                        android:textColor="@color/colorText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </TableRow>
+            <TableRow
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent">
+                <CheckBox
+                    android:id="@+id/idCBSabado"
+                    android:text="Sab"
+                    android:textColor="@color/colorText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <CheckBox
+                    android:layout_marginLeft="@dimen/paddingLeft"
+                    android:id="@+id/idCBDomingo"
+                    android:text="Dom"
+                    android:textColor="@color/colorText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </TableRow>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent">
+
+                <TextView
+                    android:id="@+id/txt15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Até 15Km"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="22sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+
+                <EditText
+                    android:id="@+id/idtxtValor15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:hint="R$ 00,00"
+                    android:textAlignment="textEnd"
+                    android:inputType="number"
+                    android:textColorHint="@color/colorTextHint"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@+id/txt15"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent">
+
+                <TextView
+                    android:id="@+id/txt30"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Até 30Km"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="22sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <EditText
+                    android:id="@+id/idtxtValor30"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="end"
+                    android:hint="R$ 00,00"
+                    android:textColorHint="@color/colorTextHint"
+                    android:inputType="number"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@+id/txt30"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent">
+
+                <TextView
+                    android:id="@+id/txt31"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Acima de 31Km"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="22sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/idtxtValor31"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="end"
+                    android:hint="R$ 00,00"
+                    android:textColorHint="@color/colorTextHint"
+                    android:inputType="number"
+                    android:textAlignment="textEnd"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintStart_toEndOf="@+id/txt31"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                android:id="@+id/btnAddValores"
+                android:background="@drawable/button_background"
+                android:textColor="@color/white"
+                android:layout_marginTop="30dp"
+                android:text="adicionar valores"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
