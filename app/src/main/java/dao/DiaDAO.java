@@ -49,6 +49,18 @@ public class DiaDAO {
         return dia;
     }
 
+    public Dia getByDia(int day){
+        Cursor cursor = banco.rawQuery("SELECT * FROM dia WHERE dia =" + day, null);
+
+        if(cursor.moveToFirst()){
+            dia = new Dia();
+            dia.setId(cursor.getInt(0));
+            dia.setIdTarifa(cursor.getInt(1));
+            dia.setDia(cursor.getInt(2));
+        }
+        return dia;
+    }
+
     public List<Dia> getByTarifa(int idTarifa){
         List<Dia> dias = new ArrayList<>();
         Cursor cursor = banco.query("dia", new String[]{"id", "idTarifa", "dia"},

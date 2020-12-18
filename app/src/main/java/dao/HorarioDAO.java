@@ -50,6 +50,19 @@ public class HorarioDAO {
         return horario;
     }
 
+    public Horario getByIdTarifa(int idTarifa) {
+        Cursor cursor = banco.rawQuery("SELECT * FROM horario WHERE idTarifa =" + idTarifa, null);
+
+        if(cursor.moveToFirst()){
+            horario = new Horario();
+            horario.setId(cursor.getInt(0));
+            horario.setIdTarifa(cursor.getInt(1));
+            horario.setHoraInicial(cursor.getInt(2));
+            horario.setHoraFinal(cursor.getInt(3));
+        }
+        return horario;
+    }
+
     public List<Horario> getByTarifa(int idTarifa){
         List<Horario> horarios = new ArrayList<>();
         Cursor cursor = banco.query("horario", new String[]{"id", "idTarifa", "horarioInicial", "horarioFinal"},

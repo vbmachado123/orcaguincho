@@ -6,8 +6,8 @@ public class Horario implements Serializable {
 
     private int id;
     private int idTarifa;
-    private double horaInicial;
-    private double horaFinal;
+    private int horaInicial;
+    private int horaFinal;
 
     public int getId() {
         return id;
@@ -25,19 +25,19 @@ public class Horario implements Serializable {
         this.idTarifa = idTarifa;
     }
 
-    public double getHoraInicial() {
+    public int getHoraInicial() {
         return horaInicial;
     }
 
-    public void setHoraInicial(double horaInicial) {
+    public void setHoraInicial(int horaInicial) {
         this.horaInicial = horaInicial;
     }
 
-    public double getHoraFinal() {
+    public int getHoraFinal() {
         return horaFinal;
     }
 
-    public void setHoraFinal(double horaFinal) {
+    public void setHoraFinal(int horaFinal) {
         this.horaFinal = horaFinal;
     }
 }

@@ -115,12 +115,12 @@ public class ConfiguracaoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(verificaCampoVazio()) { /* Lógica para salvar todas as tarifas e limpar os campos */
+/*
+                    int hInicio, hFim;
+                    hInicio = Integer.parseInt(removeCaracter(horaInicial, ":", ""));
+                    hFim = Integer.parseInt(removeCaracter(horaFinal, ":", ""));
 
-                    double hInicio, hFim;
-                    hInicio = Double.parseDouble(horaInicial.getText().toString());
-                    hFim = Double.parseDouble(horaFinal.getText().toString());
-
-                    if(hInicio > hFim) {
+                    if(hInicio > hFim) {*/
                         tarifa = new Tarifa();
 
                         tarifa.setValor15(Double.parseDouble(txt15.getText().toString().replaceAll(",", "")));
@@ -134,8 +134,10 @@ public class ConfiguracaoActivity extends AppCompatActivity {
                         salvarHorarios(idTarifa);
                         limparCampos();
                         toast("Tarifa adicionada com sucesso!");
-                    } else
+                   /*
+                   } else
                         toast("A Hora INICIAL não pode ser menor do que a FINAL!");
+                   * */
                 } else
                     toast("Preencha todos os campos!");
             }
@@ -180,11 +182,15 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         }
     }
 
+    private String removeCaracter(EditText inicial , String reg, String rep) {
+        return inicial.getText().toString().replace(reg, rep);
+    }
+
     private void salvarHorarios(int idTarifa) {
         horario = new Horario();
         horario.setIdTarifa(idTarifa);
-        horario.setHoraInicial(Double.parseDouble(horaInicial.getText().toString().replaceAll(":", "")));
-        horario.setHoraFinal(Double.parseDouble(horaFinal.getText().toString().replaceAll(":", "")));
+        horario.setHoraInicial(Integer.parseInt(removeCaracter(horaInicial, ":", "")));
+        horario.setHoraFinal(Integer.parseInt(removeCaracter(horaFinal, ":", "")));
         long id = horarioDAO.inserir(horario);
 
         Log.i("Retorno", "idHorario - " + id);

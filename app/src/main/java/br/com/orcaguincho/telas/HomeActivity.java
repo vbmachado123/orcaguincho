@@ -23,11 +23,14 @@ import com.github.rtoshiro.util.format.text.MaskTextWatcher;
 
 import org.w3c.dom.Text;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 import br.com.orcaguincho.R;
@@ -55,6 +58,8 @@ public class HomeActivity extends AppCompatActivity {
     private Horario horario;
     private HorarioDAO horarioDAO;
     private Context context;
+    private List<Horario> horarios;
+    private List<Dia> dias;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +76,10 @@ public class HomeActivity extends AppCompatActivity {
         diaDAO = new DiaDAO(context);
         horario = new Horario();
         horarioDAO = new HorarioDAO(context);
+        horarios = new ArrayList<>();
+        dias = new ArrayList<>();
 
-        tarifa = tarifaDAO.recupera();
+        tarifa = tarifaDAO.recupera(); //Verifica se já possui alguma tarifa
         if(tarifa == null) {
             Toast.makeText(context, "Insira algumas tarifas antes de prosseguir", Toast.LENGTH_SHORT).show();
             acessaActivity(ConfiguracaoActivity.class);
@@ -94,8 +101,8 @@ public class HomeActivity extends AppCompatActivity {
         dataHora = (TextView) findViewById(R.id.dataHora);
         txtAviso = (TextView) findViewById(R.id.txtAviso);
         txtValorCorrida = (TextView) findViewById(R.id.txtValorCorrida);
-        cbImediato = (CheckBox) findViewById(R.id.cbImediato);
-        cbDomFer = (CheckBox) findViewById(R.id.cbDomFer);
+       /* cbImediato = (CheckBox) findViewById(R.id.cbImediato);
+        cbDomFer = (CheckBox) findViewById(R.id.cbDomFer);*/
         etDistancia = (EditText) findViewById(R.id.etDistancia);
         btnCalcular = (Button) findViewById(R.id.btnCalcular);
         dataHora.setText(formataHora("dd/MM/yyyy - HH:mm"));
@@ -103,15 +110,80 @@ public class HomeActivity extends AppCompatActivity {
         mascara("KM NNNNN", etDistancia);
 
         String data = formataHora("dd/MM/yyyy");
-        txtValorCorrida.setText(getWeek(data));
+        String hora = formataHora("HHmm");
+      //  txtValorCorrida.setText(getWeek(data));
 
         btnCalcular.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 double distancia = Double.parseDouble(etDistancia.getText().toString().replaceAll("KM", ""));
+
+                txtValorCorrida.setText("R$" + calcularValor( data, hora, distancia));
             }
         });
 
+    }
+
+    private String calcularValor( String data, String hora, double distancia){
+        String valor = "";
+
+        int day = converteDia(data);
+        dia = diaDAO.getByDia(day);
+
+        dias = diaDAO.getByTarifa(dia.getIdTarifa());
+        horarios = horarioDAO.getByTarifa(dia.getIdTarifa());
+
+        int horaCompara = Integer.parseInt(hora);
+
+        for(Horario h : horarios) { //Tentando encontrar o horário
+            if(h.getHoraInicial() <= horaCompara && h.getHoraFinal() >= horaCompara) {
+                tarifa = tarifaDAO.getById(h.getIdTarifa());
+            }
+        }
+
+        if(distancia <= 15) valor += String.valueOf(tarifa.getValor15());
+        if(distancia <= 30 && distancia > 15) valor = String.valueOf(tarifa.getValor30());
+        if(distancia > 30) {
+            int diferenca = (int) (distancia - 30);
+            int valorFinal = (int) (tarifa.getValor30() + ((int) (diferenca * tarifa.getValor31())));
+            valor += String.valueOf(valorFinal);
+        }
+        DecimalFormat df = new DecimalFormat(",##0,00");
+        String dx = df.format(Double.parseDouble(valor));
+
+        return dx;
+    }
+
+    private int converteDia(String data) {
+        int day = 0;
+        switch (data){
+            case "DOM":
+                day = 0;
+                break;
+            case "SEG":
+                day = 1;
+                break;
+            case "TER":
+                day = 2;
+                break;
+            case "QUA":
+                day = 3;
+                break;
+            case "QUI":
+                day = 4;
+                break;
+            case "SEX":
+                day = 5;
+                break;
+            case "SAB":
+                day = 6;
+                break;
+            default:
+                day = 1;
+                break;
+        }
+
+        return day;
     }
 
     /* RECUPERANDO A DATA */

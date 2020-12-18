@@ -252,7 +252,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Acima de 31Km"
+                    android:text="Quilômetro Adicional"
                     android:textColor="@color/colorPrimary"
                     android:textSize="22sp"
                     app:layout_constraintBottom_toBottomOf="parent"
