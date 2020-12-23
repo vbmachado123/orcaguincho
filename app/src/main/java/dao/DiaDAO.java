@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Dia;
+import model.Horario;
 import model.Tarifa;
 import sql.Conexao;
 
@@ -35,6 +36,23 @@ public class DiaDAO {
 
         }
         return dia;
+    }
+
+    public List<Dia> obterTodos(){
+        List<Dia> dias = new ArrayList<>();
+        Cursor cursor = banco.query("dia", new String[]{"id", "idTarifa", "dia"},
+                null, null, null, null, null);
+
+        cursor.moveToFirst();
+
+        while (cursor.moveToNext()){
+            dia = new Dia();
+            dia.setId(cursor.getInt(0));
+            dia.setIdTarifa(cursor.getInt(1));
+            dia.setDia(cursor.getInt(2));
+            dias.add(dia);
+        }
+        return dias;
     }
 
     public Dia getById(int id){

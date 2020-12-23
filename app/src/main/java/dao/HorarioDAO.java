@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Horario;
+import model.Tarifa;
 import sql.Conexao;
 
 public class HorarioDAO {
@@ -35,6 +36,24 @@ public class HorarioDAO {
 
         }
         return horario;
+    }
+
+    public List<Horario> obterTodos(){
+        List<Horario> horarios = new ArrayList<>();
+        Cursor cursor = banco.query("inspecao", new String[]{"id", "idTarifa", "horarioInicial", "horarioFinal"}, null, null, null, null, null);
+
+        cursor.moveToFirst();
+
+        while (cursor.moveToNext()){
+            horario = new Horario();
+            horario.setId(cursor.getInt(0));
+            horario.setIdTarifa(cursor.getInt(1));
+            horario.setHoraInicial(cursor.getInt(2));
+            horario.setHoraFinal(cursor.getInt(3));
+
+            horarios.add(horario);
+        }
+        return horarios;
     }
 
     public Horario getById(int id){

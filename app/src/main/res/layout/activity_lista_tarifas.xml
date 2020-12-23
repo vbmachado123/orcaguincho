@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    tools:context="telas.ListaInspecaoActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:elevation="8dp"
+        app:title="Tarifas"
+        android:theme="@style/Theme.OrcaGuincho"
+        app:titleTextColor="@android:color/white"
+        app:subtitleTextColor="@android:color/white"
+        style="@android:style/Holo.Light.ButtonBar"
+        android:outlineAmbientShadowColor="@android:color/white"
+        android:outlineSpotShadowColor="@android:color/white"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <ListView
+        android:id="@+id/lvTarifas"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:divider="@color/colorControlNormal"
+        android:dividerHeight="@dimen/cardview_default_radius"
+        android:padding="8dp"></ListView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp">
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAdd"
+            app:fabSize="auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:src="@drawable/ic_add"
+            app:rippleColor="@color/white"
+            android:tint="@color/white"
+            app:tint="@color/white"
+            tools:ignore="VectorDrawableCompat" />
+    </LinearLayout>
+</RelativeLayout>

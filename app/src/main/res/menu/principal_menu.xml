@@ -5,4 +5,9 @@
         android:title="Valores"
         app:showAsAction="never"
         android:color="@color/white"/>
+
+    <item android:id="@+id/item_tarifas"
+        android:title="Tarifas"
+        app:showAsAction="never"
+        android:color="@color/white"/>
 </menu>

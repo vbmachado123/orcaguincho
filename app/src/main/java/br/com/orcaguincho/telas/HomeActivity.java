@@ -97,7 +97,7 @@ public class HomeActivity extends AppCompatActivity {
     private void validaCampos() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle("Configurações");
+        toolbar.setTitle("Home");
         dataHora = (TextView) findViewById(R.id.dataHora);
         txtAviso = (TextView) findViewById(R.id.txtAviso);
         txtValorCorrida = (TextView) findViewById(R.id.txtValorCorrida);
@@ -225,6 +225,9 @@ public class HomeActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.item_valores:
                 acessaActivity(ConfiguracaoActivity.class);
+                return true;
+            case R.id.item_tarifas:
+                acessaActivity(ListaTarifasActivity.class);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

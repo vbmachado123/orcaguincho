@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    android:padding="8dp"
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:textStyle="bold"
+        android:text="seg;ter;qua;qui;sex;sab"
+        android:id="@+id/txtDias"
+        android:textColor="@color/colorText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:textColor="@color/colorText"
+        android:textStyle="bold"
+        android:text="06:00 - 22:00"
+        android:id="@+id/txtHorario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TableRow
+        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <TextView
+            android:textColor="@color/colorText"
+            android:textStyle="bold"
+            android:text="Até 15Km"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:textColor="@color/colorText"
+            android:layout_marginLeft="10dp"
+            android:textStyle="italic"
+            android:id="@+id/txtValor15"
+            android:text="R$ 100,00"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </TableRow>
+
+
+    <TableRow
+        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <TextView
+            android:textColor="@color/colorText"
+            android:textStyle="bold"
+            android:text="Até 30Km"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:textColor="@color/colorText"
+            android:layout_marginLeft="10dp"
+            android:textStyle="italic"
+            android:id="@+id/txtValor30"
+            android:text="R$ 130,00"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </TableRow>
+
+
+    <TableRow
+        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <TextView
+            android:textColor="@color/colorText"
+            android:textStyle="bold"
+            android:text="Km Adicional"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:textColor="@color/colorText"
+            android:layout_marginLeft="10dp"
+            android:textStyle="italic"
+            android:id="@+id/txtKmAdicional"
+            android:text="R$ 1,70"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </TableRow>
+
+</LinearLayout>

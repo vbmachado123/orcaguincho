@@ -5,6 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import model.Tarifa;
 import sql.Conexao;
 
@@ -32,6 +35,24 @@ public class TarifaDAO {
 
         }
         return tarifa;
+    }
+
+    public List<Tarifa> obterTodos(){
+        List<Tarifa> tarifas = new ArrayList<>();
+        Cursor cursor = banco.query("tarifa", new String[]{"id", "valor15", "valor30", "valor31"}, null, null, null, null, null);
+
+        cursor.moveToFirst();
+
+        while (cursor.moveToNext()){
+            tarifa = new Tarifa();
+            tarifa.setId(cursor.getInt(0));
+            tarifa.setValor15(cursor.getInt(1));
+            tarifa.setValor30(cursor.getInt(2));
+            tarifa.setValor31(cursor.getInt(3));
+
+            tarifas.add(tarifa);
+        }
+        return tarifas;
     }
 
     public Tarifa getById(int id){

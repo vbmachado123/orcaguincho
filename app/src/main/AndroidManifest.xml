@@ -9,19 +9,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.OrcaGuincho">
-        <activity android:name=".telas.ConfiguracaoActivity"
+        <activity android:name=".telas.ListaTarifasActivity"></activity>
+        <activity android:name=".telas.HomeActivity" />
+        <activity
+            android:name=".telas.ConfiguracaoActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:parentActivityName=".com.telas.HomeActivity"
-            ></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".telas.MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".telas.HomeActivity"
+            android:name=".telas.SplashScreen"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">

@@ -14,6 +14,7 @@
         app:titleTextColor="@android:color/white"
         app:subtitleTextColor="@android:color/white"
         style="@android:style/Holo.Light.ButtonBar"
+        app:title="Home"
         android:outlineAmbientShadowColor="@android:color/white"
         android:outlineSpotShadowColor="@android:color/white"
         android:minHeight="?attr/actionBarSize"

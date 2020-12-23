@@ -233,6 +233,9 @@ public class ConfiguracaoActivity extends AppCompatActivity {
             case R.id.item_valores:
                 acessaActivity(ConfiguracaoActivity.class);
                 return true;
+            case R.id.item_tarifas:
+                acessaActivity(ListaTarifasActivity.class);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
