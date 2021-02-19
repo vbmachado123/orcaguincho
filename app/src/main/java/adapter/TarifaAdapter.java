@@ -6,7 +6,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import br.com.orcaguincho.R;
@@ -57,4 +60,6 @@ public class TarifaAdapter extends BaseAdapter {
 
         return v;
     }
+
+
 }

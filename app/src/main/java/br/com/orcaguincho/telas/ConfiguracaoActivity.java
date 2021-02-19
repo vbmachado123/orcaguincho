@@ -29,6 +29,7 @@ import dao.HorarioDAO;
 import dao.TarifaDAO;
 import model.Dia;
 import model.Horario;
+import model.ListaTarifa;
 import model.Tarifa;
 import util.MoneyTextWatcher;
 
@@ -52,6 +53,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
     private  ArrayList<EditText> inputs;
 
     private Context context;
+    private ListaTarifa listaTarifa;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,16 @@ public class ConfiguracaoActivity extends AppCompatActivity {
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        //Recuperando o caminho do documento
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+
+        if(extras != null) {
+            listaTarifa = new ListaTarifa();
+            listaTarifa = (ListaTarifa) extras.getSerializable("tarifa");
+            Log.i("tarifa", listaTarifa.getDiasSemana());
+        }
 
         context = this;
         tarifaDAO = new TarifaDAO(context);
@@ -91,11 +103,13 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         txt31 = (EditText) findViewById(R.id.idtxtValor31);
         btnAddValores = (Button) findViewById(R.id.btnAddValores);
 
-        mascara("NN:NN", horaInicial);
-        mascara("NN:NN", horaFinal);
-        txt15.addTextChangedListener(new MoneyTextWatcher(txt15));
-        txt30.addTextChangedListener(new MoneyTextWatcher(txt30));
-        txt31.addTextChangedListener(new MoneyTextWatcher(txt31));
+        if(listaTarifa == null) {
+            mascara("NN:NN", horaInicial);
+            mascara("NN:NN", horaFinal);
+            txt15.addTextChangedListener(new MoneyTextWatcher(txt15));
+            txt30.addTextChangedListener(new MoneyTextWatcher(txt30));
+            txt31.addTextChangedListener(new MoneyTextWatcher(txt31));
+        }
 
         inputs.add(horaInicial);
         inputs.add(horaFinal);
@@ -110,6 +124,9 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         checklist.add(cbQui);
         checklist.add(cbSex);
         checklist.add(cbSab);
+
+        if(listaTarifa != null)
+            recuperarInformacoes();
 
         btnAddValores.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,6 +159,29 @@ public class ConfiguracaoActivity extends AppCompatActivity {
                     toast("Preencha todos os campos!");
             }
         });
+    }
+
+    private void recuperarInformacoes() {
+
+        horaInicial.setText(listaTarifa.getHorario().substring(0, 5));
+        horaFinal.setText(listaTarifa.getHorario().substring(8, 13));
+
+        preencheDias();
+
+        txt15.setText(listaTarifa.getValor15() + "0");
+        txt30.setText(listaTarifa.getValor30() + "0");
+        txt31.setText(listaTarifa.getKmAdicional());
+
+    }
+
+    private void preencheDias() {
+        if (listaTarifa.getDiasSemana().contains("DOM")) cbDom.setChecked(true);
+        if (listaTarifa.getDiasSemana().contains("SEG")) cbSeg.setChecked(true);
+        if (listaTarifa.getDiasSemana().contains("TER")) cbTer.setChecked(true);
+        if (listaTarifa.getDiasSemana().contains("QUA")) cbQua.setChecked(true);
+        if (listaTarifa.getDiasSemana().contains("QUI")) cbQui.setChecked(true);
+        if (listaTarifa.getDiasSemana().contains("SEX")) cbSex.setChecked(true);
+        if (listaTarifa.getDiasSemana().contains("SAB")) cbSab.setChecked(true);
     }
 
     private void mascara(String mascara, EditText campo) {

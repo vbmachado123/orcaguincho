@@ -116,9 +116,13 @@ public class HomeActivity extends AppCompatActivity {
         btnCalcular.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                double distancia = Double.parseDouble(etDistancia.getText().toString().replaceAll("KM", ""));
 
-                txtValorCorrida.setText("R$" + calcularValor( data, hora, distancia));
+                if (!etDistancia.getText().toString().equals("")) {
+                    double distancia = Double.parseDouble(etDistancia.getText().toString().replaceAll("KM", ""));
+
+                    txtValorCorrida.setText("R$" + calcularValor( data, hora, distancia));
+                } else
+                    Toast.makeText(context, "Preencha a distância!", Toast.LENGTH_SHORT).show();
             }
         });
 

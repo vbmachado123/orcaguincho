@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.OrcaGuincho">
-        <activity android:name=".telas.ListaTarifasActivity"></activity>
+        <activity android:name=".telas.CadastroActivity"></activity>
+        <activity android:name=".telas.ListaTarifasActivity" />
         <activity android:name=".telas.HomeActivity" />
         <activity
             android:name=".telas.ConfiguracaoActivity"
