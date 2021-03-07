@@ -49,9 +49,11 @@ public class TarifaAdapter extends BaseAdapter {
         TextView txtValor15 = v.findViewById(R.id.txtValor15);
         TextView txtValor30 = v.findViewById(R.id.txtValor30);
         TextView txtKmAdicional = v.findViewById(R.id.txtKmAdicional);
+        TextView txtTipoVeiculo = v.findViewById(R.id.txtTipoVeiculo);
 
         ListaTarifa lt = tarifas.get(i);
 
+        txtTipoVeiculo.setText(lt.getTipoVeiculo());
         txtDias.setText(lt.getDiasSemana());
         txtHorario.setText(lt.getHorario());
         txtValor15.setText("R$: " + lt.getValor15());

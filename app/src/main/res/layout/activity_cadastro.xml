@@ -52,11 +52,19 @@
                 android:textColor="@color/colorText"
                 android:textColorHint="@color/colorTextHint" />
 
+            <CheckBox
+                android:layout_marginTop="16dp"
+                android:id="@+id/cbAutoriza"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorText"
+                android:text="Autorizo receber atualizações via e-mail e/ou Whatsapp"/>
+
             <Button
                 android:id="@+id/btnCadastro"
                 android:background="@drawable/button_background"
                 android:textColor="@color/white"
-                android:layout_marginTop="60dp"
+                android:layout_marginTop="32dp"
                 android:text="Fazer Cadastro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

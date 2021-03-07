@@ -6,6 +6,17 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:background="@color/colorPrimary"
+        android:id="@+id/txtTipoVeiculo"
+        android:textColor="@color/colorBackground"
+        android:textAlignment="center"
+        android:textSize="22sp"
+        android:text="Passeio"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:gravity="center" />
+
+    <TextView
         android:textStyle="bold"
         android:text="seg;ter;qua;qui;sex;sab"
         android:id="@+id/txtDias"

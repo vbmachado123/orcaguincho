@@ -1,15 +1,20 @@
 package model;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 
 public class ListaTarifa implements Serializable {
 
+    public String tipoVeiculo;
     private int id;
     private String diasSemana;
     private String horario;
     private String valor15;
     private String valor30;
     private String kmAdicional;
+    private Long idTarifa;
 
     public int getId() {
         return id;
@@ -57,5 +62,21 @@ public class ListaTarifa implements Serializable {
 
     public void setKmAdicional(String kmAdicional) {
         this.kmAdicional = kmAdicional;
+    }
+
+    public Long getIdTarifa() {
+        return idTarifa;
+    }
+
+    public void setIdTarifa(Long idTarifa) {
+        this.idTarifa = idTarifa;
+    }
+
+    public String getTipoVeiculo() {
+        return tipoVeiculo;
+    }
+
+    public void setTipoVeiculo(String tipoVeiculo) {
+        this.tipoVeiculo = tipoVeiculo;
     }
 }

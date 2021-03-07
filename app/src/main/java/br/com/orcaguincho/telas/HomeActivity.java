@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,7 +22,7 @@ import android.widget.Toast;
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
 
-import org.w3c.dom.Text;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -32,11 +33,14 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
 
+import asynctask.BaseAsyncTask;
 import br.com.orcaguincho.R;
-import dao.DiaDAO;
-import dao.HorarioDAO;
-import dao.TarifaDAO;
+import database.ValoraDatabase;
+import database.dao.DiaDAO;
+import database.dao.HorarioDAO;
+import database.dao.TarifaDAO;
 import model.Dia;
 import model.Horario;
 import model.Tarifa;
@@ -61,6 +65,8 @@ public class HomeActivity extends AppCompatActivity {
     private List<Horario> horarios;
     private List<Dia> dias;
 
+    private String valorFormatado;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,22 +74,32 @@ public class HomeActivity extends AppCompatActivity {
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         context = this;
+        ValoraDatabase db = ValoraDatabase.getInstance(context);
+
         tarifa = new Tarifa();
-        tarifaDAO = new TarifaDAO(context);
+        tarifaDAO = db.gerTarifaDAO();
+
         dia = new Dia();
-        diaDAO = new DiaDAO(context);
+        diaDAO = db.getDiaDAO();
+
         horario = new Horario();
-        horarioDAO = new HorarioDAO(context);
+        horarioDAO = db.getHorarioDAO();
+
         horarios = new ArrayList<>();
         dias = new ArrayList<>();
 
-        tarifa = tarifaDAO.recupera(); //Verifica se já possui alguma tarifa
-        if(tarifa == null) {
-            Toast.makeText(context, "Insira algumas tarifas antes de prosseguir", Toast.LENGTH_SHORT).show();
-            acessaActivity(ConfiguracaoActivity.class);
-        }
+        valorFormatado = "";
+
+        new BaseAsyncTask<>(() -> {
+            tarifa = tarifaDAO.buscaPorId(1); //Verifica se já possui alguma tarifa
+            return tarifa;
+        }, (tarifa) -> {
+            if (tarifa == null) {
+                Toast.makeText(context, "Insira algumas tarifas antes de prosseguir", Toast.LENGTH_SHORT).show();
+                acessaActivity(ConfiguracaoActivity.class);
+            }
+        }).execute();
 
         validaCampos();
     }
@@ -111,56 +127,69 @@ public class HomeActivity extends AppCompatActivity {
 
         String data = formataHora("dd/MM/yyyy");
         String hora = formataHora("HHmm");
-      //  txtValorCorrida.setText(getWeek(data));
+        //  txtValorCorrida.setText(getWeek(data));
 
         btnCalcular.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                txtValorCorrida.setText("R$ 00,00");
                 if (!etDistancia.getText().toString().equals("")) {
                     double distancia = Double.parseDouble(etDistancia.getText().toString().replaceAll("KM", ""));
-
-                    txtValorCorrida.setText("R$" + calcularValor( data, hora, distancia));
+                    calcularValor(data, hora, distancia);
                 } else
                     Toast.makeText(context, "Preencha a distância!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void calcularValor(String data, String hora, double distancia) {
+
+        new BaseAsyncTask<>(() -> {
+            String valor = "";
+            int day = converteDia(data);
+            dia = diaDAO.buscaPorDia(day);
+
+            dias = diaDAO.buscaPorTarifa(dia.getIdTarifa());
+            horario = horarioDAO.buscaPorTarifa(dia.getIdTarifa());
+
+            for (Dia d : dias) Log.i("Tarifa", "Dia Tarifa: " + d.getDia());
+            for (Horario h : horarios)
+                Log.i("Tarifa", "Horário Tarifa: " + h.getHoraInicial() + " - " + h.getHoraFinal());
+
+            int horaCompara = Integer.parseInt(hora);
+
+            return calculaTarifa(distancia, valor, horaCompara);
+        }, (valor) -> {
+            Log.i("Tarifa", "Valor: " + valor);
+            txtValorCorrida.setText("R$" + valor);
+        }).execute();
 
     }
 
-    private String calcularValor( String data, String hora, double distancia){
-        String valor = "";
-
-        int day = converteDia(data);
-        dia = diaDAO.getByDia(day);
-
-        dias = diaDAO.getByTarifa(dia.getIdTarifa());
-        horarios = horarioDAO.getByTarifa(dia.getIdTarifa());
-
-        int horaCompara = Integer.parseInt(hora);
-
-        for(Horario h : horarios) { //Tentando encontrar o horário
-            if(h.getHoraInicial() <= horaCompara && h.getHoraFinal() >= horaCompara) {
-                tarifa = tarifaDAO.getById(h.getIdTarifa());
+    @NotNull
+    private String calculaTarifa(double distancia, String valor, int horaCompara) {
+        for (Horario h : horarios) { //Tentando encontrar o horário
+            if (h.getHoraInicial() <= horaCompara && h.getHoraFinal() >= horaCompara) {
+                tarifa = tarifaDAO.buscaPorId(h.getIdTarifa());
+                Log.i("Tarifa", "Tarifa Buscada: " + tarifa.getValor15());
             }
         }
 
-        if(distancia <= 15) valor += String.valueOf(tarifa.getValor15());
-        if(distancia <= 30 && distancia > 15) valor = String.valueOf(tarifa.getValor30());
-        if(distancia > 30) {
+        if (distancia <= 15) valor += String.valueOf(tarifa.getValor15());
+        if (distancia <= 30 && distancia > 15) valor = String.valueOf(tarifa.getValor30());
+        if (distancia > 30) {
             int diferenca = (int) (distancia - 30);
-            int valorFinal = (int) (tarifa.getValor30() + ((int) (diferenca * tarifa.getValor31())));
+            int valorFinal = (int) (tarifa.getValor30() + ((int) (diferenca * tarifa.getValorKmAdicional())));
             valor += String.valueOf(valorFinal);
         }
         DecimalFormat df = new DecimalFormat(",##0,00");
-        String dx = df.format(Double.parseDouble(valor));
 
-        return dx;
+        return df.format(Double.parseDouble(valor));
     }
 
     private int converteDia(String data) {
         int day = 0;
-        switch (data){
+        switch (data) {
             case "DOM":
                 day = 0;
                 break;
@@ -191,7 +220,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     /* RECUPERANDO A DATA */
-    private String formataHora(String formato){
+    private String formataHora(String formato) {
         SimpleDateFormat dataFormatada = new SimpleDateFormat(formato);
         Date date = new Date();
         Calendar calendar = Calendar.getInstance();
@@ -200,7 +229,7 @@ public class HomeActivity extends AppCompatActivity {
         return dataFormatada.format(dataAtual);
     }
 
-    public static String getWeek(String date){
+    public static String getWeek(String date) {
         String dayWeek = "---";
         GregorianCalendar gc = new GregorianCalendar();
         try {
@@ -226,7 +255,7 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.item_valores:
                 acessaActivity(ConfiguracaoActivity.class);
                 return true;

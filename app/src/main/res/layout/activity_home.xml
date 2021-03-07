@@ -36,6 +36,17 @@
             <TextView
                 android:gravity="center"
                 android:layout_gravity="center"
+                android:textSize="26sp"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold"
+                android:text="R$ 00,00"
+                android:id="@+id/txtValorCorrida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:gravity="center"
+                android:layout_gravity="center"
                 android:layout_marginTop="60dp"
                 android:textSize="18sp"
                 android:text="dataHora Atual"
@@ -60,6 +71,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 -->
+
+            <TextView
+                android:textColor="@color/colorPrimary"
+                android:textSize="22sp"
+                android:text="Tipo de veículo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Spinner
+                android:id="@+id/tiposVeiculosS"
+                style="@style/spinner_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <EditText
                 android:id="@+id/etDistancia"
                 android:layout_marginTop="8dp"
@@ -87,16 +112,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <TextView
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:layout_marginTop="100dp"
-                android:textSize="22sp"
-                android:textColor="@color/colorPrimary"
-                android:text="R$ 00,00"
-                android:id="@+id/txtValorCorrida"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

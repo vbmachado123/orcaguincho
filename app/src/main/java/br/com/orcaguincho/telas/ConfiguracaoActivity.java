@@ -13,20 +13,27 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+import adapter.TipoVeiculoAdapter;
+import asynctask.BaseAsyncTask;
 import br.com.orcaguincho.R;
-import dao.DiaDAO;
-import dao.HorarioDAO;
-import dao.TarifaDAO;
+import database.dao.DiaDAO;
+import database.dao.HorarioDAO;
+import database.dao.TarifaDAO;
+import database.ValoraDatabase;
 import model.Dia;
 import model.Horario;
 import model.ListaTarifa;
@@ -37,9 +44,11 @@ public class ConfiguracaoActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private EditText horaInicial, horaFinal;
-    private CheckBox cbSeg, cbTer, cbQua, cbQui, cbSex, cbSab, cbDom;
+    private CheckBox cbSeg, cbTer, cbQua, cbQui, cbSex, cbSab, cbDom/* cbPasseio, cbUtilitario*/;
     private EditText txt15, txt30, txt31;
     private Button btnAddValores;
+
+    private Spinner tiposVeiculosS;
 
     private Tarifa tarifa;
     private TarifaDAO tarifaDAO;
@@ -49,11 +58,12 @@ public class ConfiguracaoActivity extends AppCompatActivity {
 
     private Horario horario;
     private HorarioDAO horarioDAO;
-    private  ArrayList<CheckBox> checklist;
-    private  ArrayList<EditText> inputs;
+    private ArrayList<CheckBox> checklist;
+    private ArrayList<EditText> inputs;
 
     private Context context;
     private ListaTarifa listaTarifa;
+    private String tipoSelecionado = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,16 +77,18 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
-        if(extras != null) {
+        if (extras != null) {
             listaTarifa = new ListaTarifa();
             listaTarifa = (ListaTarifa) extras.getSerializable("tarifa");
             Log.i("tarifa", listaTarifa.getDiasSemana());
         }
 
         context = this;
-        tarifaDAO = new TarifaDAO(context);
-        diaDAO = new DiaDAO(context);
-        horarioDAO = new HorarioDAO(context);
+        ValoraDatabase db = ValoraDatabase.getInstance(context);
+
+        tarifaDAO = db.gerTarifaDAO();
+        diaDAO = db.getDiaDAO();
+        horarioDAO = db.getHorarioDAO();
         checklist = new ArrayList<>();
         inputs = new ArrayList<>();
         validaCampo();
@@ -98,12 +110,15 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         cbSex = (CheckBox) findViewById(R.id.idCBSexta);
         cbSab = (CheckBox) findViewById(R.id.idCBSabado);
         cbDom = (CheckBox) findViewById(R.id.idCBDomingo);
+        tiposVeiculosS = (Spinner) findViewById(R.id.tiposVeiculosS);
+       /* cbPasseio = (CheckBox) findViewById(R.id.idCBPasseio);
+        cbUtilitario = (CheckBox) findViewById(R.id.idCBUtilitario);*/
         txt15 = (EditText) findViewById(R.id.idtxtValor15);
         txt30 = (EditText) findViewById(R.id.idtxtValor30);
         txt31 = (EditText) findViewById(R.id.idtxtValor31);
         btnAddValores = (Button) findViewById(R.id.btnAddValores);
 
-        if(listaTarifa == null) {
+        if (listaTarifa == null) {
             mascara("NN:NN", horaInicial);
             mascara("NN:NN", horaFinal);
             txt15.addTextChangedListener(new MoneyTextWatcher(txt15));
@@ -111,6 +126,80 @@ public class ConfiguracaoActivity extends AppCompatActivity {
             txt31.addTextChangedListener(new MoneyTextWatcher(txt31));
         }
 
+        ArrayAdapter<CharSequence> tiposVeiculosAdapter =
+                ArrayAdapter.createFromResource(this, R.array.tiposVeiculos, R.layout.spinner_item);
+
+        tiposVeiculosAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+       // tiposVeiculosS.setOnItemSelectedListener(TipoVeiculoAdapter.class);
+
+       // tiposVeiculosS.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) context);
+
+        copulaListas();
+
+        if (listaTarifa != null)
+            recuperarInformacoes();
+
+        btnAddValores.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (verificaCampoVazio()) { /* Lógica para salvar todas as tarifas e limpar os campos */
+/*
+                    int hInicio, hFim;
+                    hInicio = Integer.parseInt(removeCaracter(horaInicial, ":", ""));
+                    hFim = Integer.parseInt(removeCaracter(horaFinal, ":", ""));
+
+                    if(hInicio > hFim) {*/
+                    tarifa = new Tarifa();
+
+                    tarifa.setValor15(Double.parseDouble(removeCaracter(txt15, ",", "")));
+                    tarifa.setValor30(Double.parseDouble(removeCaracter(txt30, ",", "")));
+                    tarifa.setValorKmAdicional(Double.parseDouble(removeCaracter(txt31, ",", "")));
+
+
+                    /*if (cbPasseio.isChecked()) tarifa.setPasseio(1);
+                    else if (cbUtilitario.isChecked()) tarifa.setUtilitario(1);
+                    else tarifa.setPasseio(1);*/
+                    tarifa.setTipoVeiculo((String) tiposVeiculosS.getSelectedItem());
+
+                    new BaseAsyncTask<>(() -> {
+
+                        int idTarifa = (int) tarifaDAO.salva(tarifa);
+
+                        Log.i("Retorno", "idTarifa - " + idTarifa);
+
+                        int i = 0;
+                        for (CheckBox cb : checklist) {
+                            if (cb.isChecked()) {
+                                dia = new Dia();
+                                dia.setIdTarifa(idTarifa);
+                                dia.setDia(i);
+                                long inserido = diaDAO.salva(dia);
+                                Log.i("Tarifa", "Dia inserido: " + inserido);
+                            }
+
+                            i++;
+                        }
+
+                        horario = new Horario();
+                        horario.setIdTarifa(idTarifa);
+                        horario.setHoraInicial(Integer.parseInt(removeCaracter(horaInicial, ":", "")));
+                        horario.setHoraFinal(Integer.parseInt(removeCaracter(horaFinal, ":", "")));
+                        horarioDAO.salva(horario);
+
+                        return null;
+
+                    }, (inserido) -> {
+                        limparCampos();
+                        toast("Tarifa adicionada com sucesso!");
+                    }).execute();
+
+                } else
+                    toast("Preencha todos os campos!");
+            }
+        });
+    }
+
+    private void copulaListas() {
         inputs.add(horaInicial);
         inputs.add(horaFinal);
         inputs.add(txt15);
@@ -124,41 +213,6 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         checklist.add(cbQui);
         checklist.add(cbSex);
         checklist.add(cbSab);
-
-        if(listaTarifa != null)
-            recuperarInformacoes();
-
-        btnAddValores.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(verificaCampoVazio()) { /* Lógica para salvar todas as tarifas e limpar os campos */
-/*
-                    int hInicio, hFim;
-                    hInicio = Integer.parseInt(removeCaracter(horaInicial, ":", ""));
-                    hFim = Integer.parseInt(removeCaracter(horaFinal, ":", ""));
-
-                    if(hInicio > hFim) {*/
-                        tarifa = new Tarifa();
-
-                        tarifa.setValor15(Double.parseDouble(txt15.getText().toString().replaceAll(",", "")));
-                        tarifa.setValor30(Double.parseDouble(txt30.getText().toString().replaceAll(",", "")));
-                        tarifa.setValor31(Double.parseDouble(txt31.getText().toString().replaceAll(",", "")));
-                        int idTarifa = (int) tarifaDAO.inserir(tarifa);
-
-                        Log.i("Retorno", "idTarifa - " + idTarifa);
-
-                        salvarDias(idTarifa);
-                        salvarHorarios(idTarifa);
-                        limparCampos();
-                        toast("Tarifa adicionada com sucesso!");
-                   /*
-                   } else
-                        toast("A Hora INICIAL não pode ser menor do que a FINAL!");
-                   * */
-                } else
-                    toast("Preencha todos os campos!");
-            }
-        });
     }
 
     private void recuperarInformacoes() {
@@ -190,64 +244,37 @@ public class ConfiguracaoActivity extends AppCompatActivity {
         campo.addTextChangedListener(mtw);
     }
 
-    private void toast(String mensagem){
+    private void toast(String mensagem) {
         Toast.makeText(context, mensagem, Toast.LENGTH_SHORT).show();
     }
 
     private void limparCampos() {
 
-       for(EditText et : inputs)
-           et.setText("");
+        for (EditText et : inputs)
+            et.getText().clear();
 
-       for(CheckBox cb : checklist)
-           if(cb.isChecked()) cb.setChecked(false);
+        for (CheckBox cb : checklist)
+            if (cb.isChecked()) cb.setChecked(false);
+
+//        acessaActivity(ConfiguracaoActivity.class);
 
     }
 
-    private void salvarDias(int idTarifa) {
-
-        int i = 0;
-        for(CheckBox cb : checklist){
-            if(cb.isChecked()){
-                dia = new Dia();
-                dia.setIdTarifa(idTarifa);
-                dia.setDia(i);
-
-               long id = diaDAO.inserir(dia);
-
-               Log.i("Retorno", "idDia - " + id);
-            }
-
-            i++;
-        }
-    }
-
-    private String removeCaracter(EditText inicial , String reg, String rep) {
+    private String removeCaracter(EditText inicial, String reg, String rep) {
         return inicial.getText().toString().replace(reg, rep);
-    }
-
-    private void salvarHorarios(int idTarifa) {
-        horario = new Horario();
-        horario.setIdTarifa(idTarifa);
-        horario.setHoraInicial(Integer.parseInt(removeCaracter(horaInicial, ":", "")));
-        horario.setHoraFinal(Integer.parseInt(removeCaracter(horaFinal, ":", "")));
-        long id = horarioDAO.inserir(horario);
-
-        Log.i("Retorno", "idHorario - " + id);
     }
 
     private boolean verificaCampoVazio() {
         boolean salvar = true;
 
-        if(horaInicial.getText().toString().equals("")) salvar = false;
-        if(horaFinal.getText().toString().equals("")) salvar = false;
-        if(txt15.getText().toString().equals("")) salvar = false;
-        if(txt30.getText().toString().equals("")) salvar = false;
-        if(txt31.getText().toString().equals("")) salvar = false;
+        if (horaInicial.getText().toString().equals("")) salvar = false;
+        if (horaFinal.getText().toString().equals("")) salvar = false;
+        if (txt15.getText().toString().equals("")) salvar = false;
+        if (txt30.getText().toString().equals("")) salvar = false;
+        if (txt31.getText().toString().equals("")) salvar = false;
 
-
-        for(CheckBox cb : checklist)
-            if(cb.isChecked()) break;
+        for (CheckBox cb : checklist)
+            if (cb.isChecked()) break;
 
         return salvar;
     }
@@ -255,6 +282,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
     private void acessaActivity(Class c) {
         Intent it = new Intent(ConfiguracaoActivity.this, c);
         startActivity(it);
+        finish();
     }
 
     @Override
@@ -266,7 +294,7 @@ public class ConfiguracaoActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
@@ -280,4 +308,5 @@ public class ConfiguracaoActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
 }

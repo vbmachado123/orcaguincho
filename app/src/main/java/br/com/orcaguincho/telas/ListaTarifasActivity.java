@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,22 +18,20 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
 
 import adapter.TarifaAdapter;
+import asynctask.BaseAsyncTask;
 import br.com.orcaguincho.R;
-import dao.DiaDAO;
-import dao.HorarioDAO;
-import dao.TarifaDAO;
+import database.ValoraDatabase;
+import database.dao.DiaDAO;
+import database.dao.HorarioDAO;
+import database.dao.TarifaDAO;
 import model.Dia;
 import model.Horario;
 import model.ListaTarifa;
@@ -57,8 +56,10 @@ public class ListaTarifasActivity extends AppCompatActivity {
     private List<Horario> horarios;
     private HorarioDAO horarioDAO;
     private Horario horario;
+    private ValoraDatabase db;
 
     private Context context = this;
+    private TarifaAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,12 @@ public class ListaTarifasActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        db = ValoraDatabase.getInstance(context);
+
+        tarifaList = new ArrayList<>();
+
         validaCampos();
+
     }
 
     private void validaCampos() {
@@ -90,38 +96,45 @@ public class ListaTarifasActivity extends AppCompatActivity {
             }
         });
 
-        tarifaDAO = new TarifaDAO(context);
-        diaDAO = new DiaDAO(context);
-        horarioDAO = new HorarioDAO(context);
-
         tarifas = new ArrayList<>();
-        tarifaList = tarifaDAO.obterTodos();
 
-        for(Tarifa t : tarifaList) {
-            dias = diaDAO.getByTarifa(t.getId());
-            lt = new ListaTarifa();
-            horario = new Horario();
-            horario = horarioDAO.getByIdTarifa(t.getId());
+        new BaseAsyncTask<>(() -> {
 
-            String dataConvertida = "";
-            for(Dia d : dias)
-                dataConvertida += " " + converteDia(d.getDia()) + "; ";
+            tarifaDAO = db.gerTarifaDAO();
+            diaDAO = db.getDiaDAO();
+            horarioDAO = db.getHorarioDAO();
+            tarifaList = tarifaDAO.buscaTodos();
 
-            lt.setDiasSemana(dataConvertida);
+            for (Tarifa t : tarifaList) {
+                dias = diaDAO.buscaPorTarifa(t.getId());
+                lt = new ListaTarifa();
+                horario = new Horario();
+                horario = horarioDAO.buscaPorTarifa(t.getId());
 
-            lt.setHorario(formataHora(String.valueOf(horario.getHoraInicial())) +
-                    " - " + formataHora(String.valueOf(horario.getHoraFinal())));
-            lt.setValor15(formataValor(String.valueOf(t.getValor15())));
-            lt.setValor30(formataValor(String.valueOf(t.getValor30())));
-            lt.setKmAdicional(formataValorAdicional(String.valueOf(t.getValor31())));
+                String dataConvertida = "";
+                for (Dia d : dias)
+                    dataConvertida += " " + converteDia(d.getDia()) + "; ";
 
-            tarifas.add(lt);
-            dias.clear();
-        }
+                lt.setDiasSemana(dataConvertida);
 
-        tarifasFiltradas.addAll(tarifas);
+                lt.setTipoVeiculo(t.getTipoVeiculo());
+                lt.setHorario(formataHora(String.valueOf(horario.getHoraInicial())) +
+                        " - " + formataHora(String.valueOf(horario.getHoraFinal())));
+                lt.setValor15(formataValor(String.valueOf(t.getValor15())));
+                lt.setValor30(formataValor(String.valueOf(t.getValor30())));
+                lt.setKmAdicional(formataValorAdicional(String.valueOf(t.getValorKmAdicional())));
 
-        TarifaAdapter adapter = new TarifaAdapter(ListaTarifasActivity.this, tarifasFiltradas);
+                tarifas.add(lt);
+                dias.clear();
+
+                lt.setIdTarifa(Long.valueOf(t.getId()));
+
+            }
+
+            return tarifas;
+        }, (t) -> tarifasFiltradas.addAll(t)).execute();
+
+        adapter = new TarifaAdapter(ListaTarifasActivity.this, tarifasFiltradas);
         lvTarifas.setAdapter(adapter);
         registerForContextMenu(lvTarifas);
     }
@@ -148,9 +161,9 @@ public class ListaTarifasActivity extends AppCompatActivity {
         i.inflate(R.menu.contexto_menu, menu);
     }
 
-    public void excluir(MenuItem item){
+    public void excluir(MenuItem item) {
         AdapterView.AdapterContextMenuInfo menuInfo =
-                ( AdapterView.AdapterContextMenuInfo ) item.getMenuInfo();
+                (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
         final ListaTarifa excluirTarifa = tarifasFiltradas.get(menuInfo.position);
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.DialogStyle)
@@ -161,16 +174,32 @@ public class ListaTarifasActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         /* EXCLUIR AS NAS TRÊS TABELAS */
+                        new BaseAsyncTask<>(() -> {
+                            //Excluir nas tres tabelas
+                            tarifaDAO = db.gerTarifaDAO();
+                            diaDAO = db.getDiaDAO();
+                            horarioDAO = db.getHorarioDAO();
 
+//                            List<Dia> diaExclui = diaDAO.buscaPorTarifa(excluirTarifa.getIdTarifa());
+//                            for(Dia d : diaExclui) diaDAO.remove(d);
+//
+//                            Horario horarioExclui = horarioDAO.buscaPorTarifa(excluirTarifa.getIdTarifa());
+//                            horarioDAO.remove(horarioExclui);
+
+                            Tarifa tarifaExclui = tarifaDAO.buscaPorId(excluirTarifa.getIdTarifa());
+                            tarifaDAO.remove(tarifaExclui);
+
+                            return null;
+                        }, (item) -> {adapter.notifyDataSetChanged();}).execute();
 
                     }
                 }).create();
         dialog.show();
     }
 
-    public void visualizar(MenuItem item){
+    public void visualizar(MenuItem item) {
         AdapterView.AdapterContextMenuInfo menuInfo =
-                ( AdapterView.AdapterContextMenuInfo ) item.getMenuInfo();
+                (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
         final ListaTarifa tarifaVisualizar = tarifasFiltradas.get(menuInfo.position);
         Intent it = new Intent(ListaTarifasActivity.this, ConfiguracaoActivity.class);
@@ -180,11 +209,11 @@ public class ListaTarifasActivity extends AppCompatActivity {
     }
 
     /* RECUPERANDO A HORA */
-    private String formataHora(String hora){
+    private String formataHora(String hora) {
 
         StringBuilder builder = new StringBuilder(hora);
 
-        if(builder.length() <= 3)
+        if (builder.length() <= 3)
             builder = builder.insert(0, "0");
 
         builder = builder.insert(2, ":");
@@ -194,7 +223,7 @@ public class ListaTarifasActivity extends AppCompatActivity {
 
     private String converteDia(int data) {
         String day = "";
-        switch (data){
+        switch (data) {
             case 0:
                 day = "DOM";
                 break;
@@ -233,7 +262,7 @@ public class ListaTarifasActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;

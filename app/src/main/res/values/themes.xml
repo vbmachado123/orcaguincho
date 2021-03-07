@@ -12,6 +12,7 @@
         <!-- Status bar color. -->
         <item name="android:homeAsUpIndicator">@drawable/ic_back</item>
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:spinnerDropDownItemStyle">@style/mySpinnerItemStyle</item>
         <!-- Customize your theme here. -->
     </style>
 
@@ -25,5 +26,22 @@
         <item name="background">@android:color/white</item>
     </style>
 
+    <style name="spinner_style">
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:dropDownWidth">533dp</item>
+        <item name="android:showDividers">none</item>
+        <item name="android:dividerHeight">0dp</item>
+        <item name="android:popupBackground">@color/colorBackground</item>
+        <item name="android:dropDownHeight">70dp</item>
+        <item name="android:scrollbarAlwaysDrawVerticalTrack">true</item>
+        <item name="android:dropDownSelector">@color/colorPrimary</item>
+        <item name="color">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="mySpinnerItemStyle" parent="@android:style/Widget.Holo.DropDownItem.Spinner">
+        <item name="android:textColor">@color/colorTextHint</item>
+        <item name="android:padding">8dp</item>
+    </style>
 
 </resources>

@@ -1,13 +1,19 @@
 package model;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 
+@Entity
 public class Tarifa implements Serializable {
 
+    @PrimaryKey(autoGenerate = true)
     private int id;
     private double valor15;
     private double valor30;
-    private double valor31;
+    private double valorKmAdicional;
+    private String tipoVeiculo;
 
     public int getId() {
         return id;
@@ -33,11 +39,19 @@ public class Tarifa implements Serializable {
         this.valor30 = valor30;
     }
 
-    public double getValor31() {
-        return valor31;
+    public double getValorKmAdicional() {
+        return valorKmAdicional;
     }
 
-    public void setValor31(double valor31) {
-        this.valor31 = valor31;
+    public void setValorKmAdicional(double valorKmAdicional) {
+        this.valorKmAdicional = valorKmAdicional;
+    }
+
+    public String getTipoVeiculo() {
+        return tipoVeiculo;
+    }
+
+    public void setTipoVeiculo(String tipoVeiculo) {
+        this.tipoVeiculo = tipoVeiculo;
     }
 }
